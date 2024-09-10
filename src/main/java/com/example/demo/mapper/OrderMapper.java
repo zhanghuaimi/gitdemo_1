@@ -88,16 +88,24 @@ public interface OrderMapper {
             @Result(property = "name", column = "name")
     })
     List<Order> searchphone(String phone);
-    @Select("SELECT DATE(`ordertime`) AS date, COALESCE(SUM(zj), 0) AS daily_total FROM `order`\n" +
-            "WHERE `ordertime` BETWEEN #{startDate} AND #{endDate}\n" +
-            "GROUP BY DATE(`ordertime`)\n" +
-            "UNION ALL\n" +
-            "SELECT NULL AS date, 0 AS daily_total\n" +
-            "FROM DUAL\n" +
-            "WHERE NOT EXISTS (\n" +
-            "    SELECT 1 FROM `order`\n" +
-            "    WHERE `ordertime` BETWEEN #{startDate} AND #{endDate}\n" +
-            ");")
+    @Select("WITH RECURSIVE date_range AS (  \n" +
+            "  SELECT '2024-05-20' AS date  \n" +
+            "  UNION ALL  \n" +
+            "  SELECT DATE_ADD(date, INTERVAL 1 DAY)  \n" +
+            "  FROM date_range  \n" +
+            "  WHERE date < '2024-05-27'  \n" +
+            ")  \n" +
+            "SELECT   \n" +
+            "    dr.date,  \n" +
+            "    COALESCE(SUM(o.zj), 0) AS daily_total  \n" +
+            "FROM   \n" +
+            "    date_range dr  \n" +
+            "LEFT JOIN   \n" +
+            "    `order` o ON DATE(o.ordertime) = dr.date  \n" +
+            "GROUP BY   \n" +
+            "    dr.date  \n" +
+            "ORDER BY   \n" +
+            "    dr.date;")
 
     List<DailySummary> getDailyTotalsByDateRange(@Param("startDate") String startDate, @Param("endDate") String endDate);
 
