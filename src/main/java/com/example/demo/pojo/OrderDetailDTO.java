@@ -18,6 +18,8 @@ public class OrderDetailDTO {
     private String userPhone;
     private String addressInfo;
     private int orderItemNum;
+    String product_name;
+    int num_orders;
 
 
     // 构造函数、Getter和Setter省略

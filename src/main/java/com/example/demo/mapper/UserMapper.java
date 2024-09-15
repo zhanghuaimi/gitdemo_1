@@ -38,6 +38,12 @@ public interface UserMapper {
     @Select("SELECT * FROM `user` WHERE id = #{id}")
     User getUserById(int id);
 
+    @Select("SELECT COUNT(*) FROM `user` WHERE `create_time` BETWEEN #{startDate} AND #{endDate}")
+    int countUsersDayDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Select("SELECT COUNT(*) FROM `user` WHERE create_time < #{endDate}")
+    int countUsersSumDate( @Param("endDate") String endDate);
+
+
 
 
 }

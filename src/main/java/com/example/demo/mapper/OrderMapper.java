@@ -89,11 +89,11 @@ public interface OrderMapper {
     })
     List<Order> searchphone(String phone);
     @Select("WITH RECURSIVE date_range AS (  \n" +
-            "  SELECT '2024-05-20' AS date  \n" +
+            "  SELECT #{startDate} AS date  \n" +
             "  UNION ALL  \n" +
             "  SELECT DATE_ADD(date, INTERVAL 1 DAY)  \n" +
             "  FROM date_range  \n" +
-            "  WHERE date < '2024-05-27'  \n" +
+            "  WHERE date < #{endDate}  \n" +
             ")  \n" +
             "SELECT   \n" +
             "    dr.date,  \n" +
@@ -108,7 +108,10 @@ public interface OrderMapper {
             "    dr.date;")
 
     List<DailySummary> getDailyTotalsByDateRange(@Param("startDate") String startDate, @Param("endDate") String endDate);
-
+    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime < #{endDate} and `status` = 5")
+    int countOrdercuss( @Param("endDate") String endDate);
+    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime < #{endDate}")
+    int countOrderall( @Param("endDate") String endDate);
 }
 
 

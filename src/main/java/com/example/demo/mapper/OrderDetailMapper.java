@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+
 @Mapper
 public interface OrderDetailMapper {
     @Select({
@@ -169,4 +170,22 @@ public interface OrderDetailMapper {
             @Result(property = "addressInfo", column = "address_info")
     })
     List<OrderDetailDTO> findById1(int Id);
+
+
+        @Select("  SELECT\n" +
+                "    p.id AS product_id,  \n" +
+                "    p.name AS product_name,\n" +
+                "    COUNT(oi.pid) AS num_orders  \n" +
+                "    FROM\n" +
+                "    product p\n" +
+                "    JOIN\n" +
+                "    orderitem oi ON p.id = oi.pid  \n" +
+                "    GROUP BY\n" +
+                "    p.id, p.name  \n" +
+                "    ORDER BY\n" +
+                "    num_orders DESC;  ")
+        List<OrderDetailDTO> getPopularProducts();
+
+
+
 }

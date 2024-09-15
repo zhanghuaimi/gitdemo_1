@@ -7,13 +7,13 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.pojo.ResponseResult;
 import com.example.demo.pojo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +86,39 @@ public class UserController {
     @GetMapping("/getUserById")
     public Result getUserById(int id) {
         return ResponseResult.succ("查询成功",userMapper.getUserById(id));
+    }
+    @GetMapping("/countUsersDayDate")
+    public Result countUsersDayDates(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        List<Integer> dailyCounts = new ArrayList<>();
+
+        while (!startLocalDate.isAfter(endLocalDate)) {
+            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            int dailyCount = userMapper.countUsersDayDate(currentStartDate, currentEndDate);
+            dailyCounts.add(dailyCount);
+
+            startLocalDate = startLocalDate.plusDays(1);
+        }
+
+        return ResponseResult.succ("查询成功", dailyCounts);
+    }
+    @GetMapping("/countUsersSumDate")
+    public Result countUsersSumDate(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        List<Integer> allCounts = new ArrayList<>();
+        while (!startLocalDate.isAfter(endLocalDate)) {
+            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            int allCount = userMapper.countUsersSumDate( currentEndDate);
+            allCounts.add(allCount);
+
+            startLocalDate = startLocalDate.plusDays(1);
+        }
+        return ResponseResult.succ("查询成功", allCounts);
     }
 
 

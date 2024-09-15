@@ -6,12 +6,10 @@ import com.example.demo.pojo.ResponseResult;
 import com.example.demo.pojo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
@@ -51,5 +49,9 @@ public class OrderDetailService {
         // 正确地传递ddh参数到findByDdh方法
         return ResponseResult.succ("查询成功", details);
     }
-
+    @GetMapping("/getPopularProducts")
+    public Result getPopularProducts(){
+        List<OrderDetailDTO> all = orderDetailMapper.getPopularProducts();
+        return ResponseResult.succ("查询成功", all);
+    }
 }

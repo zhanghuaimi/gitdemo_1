@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,38 @@ public class OrderController {
 
         return result;
     }
+    @GetMapping("/countOrdercuss")
+    public Result countOrdercuss(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        List<Integer> allCounts = new ArrayList<>();
+        while (!startLocalDate.isAfter(endLocalDate)) {
+            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            int allCount = OrderMapper.countOrdercuss( currentEndDate);
+            allCounts.add(allCount);
+
+            startLocalDate = startLocalDate.plusDays(1);
+        }
+        return ResponseResult.succ("查询成功", allCounts);
+    } @GetMapping("/countOrderall")
+    public Result countOrderall(@RequestParam String startDate, @RequestParam String endDate) {
+        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        List<Integer> allCounts = new ArrayList<>();
+        while (!startLocalDate.isAfter(endLocalDate)) {
+            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            int allCount = OrderMapper.countOrderall( currentEndDate);
+            allCounts.add(allCount);
+
+            startLocalDate = startLocalDate.plusDays(1);
+        }
+        return ResponseResult.succ("查询成功", allCounts);
     }
+
+
+}
 
 
 
