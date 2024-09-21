@@ -26,5 +26,6 @@ public interface ProductMapper {
     Product selectOne( Integer id);
     @Select("SELECT * FROM product WHERE name LIKE concat('%', #{name}, '%')")
     List<Product> selectProductsByName(String name);
-
+    @Select("SELECT COUNT(id) FROM product")
+    int countProducts();
 }

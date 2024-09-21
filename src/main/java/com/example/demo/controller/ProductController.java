@@ -56,6 +56,10 @@ public class ProductController {
             return ResponseResult.succ("查询成功", products);
         }
     }
+    @GetMapping("/countProducts")
+    public Result countProducts(){
+        return ResponseResult.succ("查询成功",productMapper.countProducts());
+    }
 
 
 

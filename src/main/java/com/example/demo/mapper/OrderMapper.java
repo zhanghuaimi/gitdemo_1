@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -108,10 +109,37 @@ public interface OrderMapper {
             "    dr.date;")
 
     List<DailySummary> getDailyTotalsByDateRange(@Param("startDate") String startDate, @Param("endDate") String endDate);
-    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime < #{endDate} and `status` = 5")
-    int countOrdercuss( @Param("endDate") String endDate);
-    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime < #{endDate}")
-    int countOrderall( @Param("endDate") String endDate);
+    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime >= #{startDate} AND ordertime < #{endDate} and `status` = 5;")
+    int countOrdercuss(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Select("SELECT COUNT(id) FROM `order` WHERE ordertime >= #{startDate} AND ordertime < #{endDate}")
+    int countOrderall( @Param("startDate") String startDate,@Param("endDate") String endDate);
+    @Select("SELECT status, COUNT(*) AS total_orders\n" +
+            "FROM `order`\n" +
+            "WHERE DATE(ordertime) = #{date}\n" +
+            "AND status IN (2, 3, 5, 6)\n" +
+            "GROUP BY status")
+    List<Map<String, Object>> getOrderStatusCountsByDate(String date);
+    @Select("SELECT COUNT(*) FROM `order` where  status = 2")
+    int all1();
+    @Select({
+            "SELECT  ",
+            "    o.id,",
+            "    o.ddh,",
+            "    o.add_id,",
+            "    o.ordertime,",
+            "    o.zj,",
+            "    o.`status`,",
+            "    a.address",
+            "FROM",
+            "    `order` o",
+            "JOIN",
+            "    address a ON o.add_id = a.id",
+            "WHERE `status` = 2 and ordertime >= #{startDate} AND ordertime < #{endDate}",
+            "LIMIT",
+            "    #{pageSize} OFFSET #{page};"
+    })
+    List<Map<String, Object>> all2(@Param("page") int page, @Param("pageSize") int pageSize, @Param("startDate") String startDate,@Param("endDate") String endDate);
+
 }
 
 

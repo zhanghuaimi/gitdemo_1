@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,34 +61,66 @@ public class OrderController {
 
         return result;
     }
+
     @GetMapping("/countOrdercuss")
     public Result countOrdercuss(@RequestParam String startDate, @RequestParam String endDate) {
-        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        List<Integer> allCounts = new ArrayList<>();
-        while (!startLocalDate.isAfter(endLocalDate)) {
-            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            int allCount = OrderMapper.countOrdercuss( currentEndDate);
-            allCounts.add(allCount);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            startLocalDate = startLocalDate.plusDays(1);
-        }
-        return ResponseResult.succ("查询成功", allCounts);
-    } @GetMapping("/countOrderall")
+        // 解析开始和结束日期
+        LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
+        LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
+
+        // 拼接完整的日期时间字符串
+        String currentStartDate = startLocalDate.atStartOfDay().format(formatter) + " 00:00:00";
+        String currentEndDate = endLocalDate.atTime(23, 59, 59).format(formatter) + " 23:59:59";
+
+        // 查询订单数量
+        int count = OrderMapper.countOrdercuss(currentStartDate, currentEndDate);
+
+        // 返回结果
+        return ResponseResult.succ("查询成功", count);
+    }
+    @GetMapping("/countOrderall")
     public Result countOrderall(@RequestParam String startDate, @RequestParam String endDate) {
-        LocalDate startLocalDate = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        LocalDate endLocalDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        List<Integer> allCounts = new ArrayList<>();
-        while (!startLocalDate.isAfter(endLocalDate)) {
-            String currentStartDate = startLocalDate.atStartOfDay().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            String currentEndDate = startLocalDate.atTime(23, 59, 59).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            int allCount = OrderMapper.countOrderall( currentEndDate);
-            allCounts.add(allCount);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            startLocalDate = startLocalDate.plusDays(1);
-        }
-        return ResponseResult.succ("查询成功", allCounts);
+        // 解析开始和结束日期
+        LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
+        LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
+
+        // 拼接完整的日期时间字符串
+        String currentStartDate = startLocalDate.atStartOfDay().format(formatter) + " 00:00:00";
+        String currentEndDate = endLocalDate.atTime(23, 59, 59).format(formatter) + " 23:59:59";
+
+        // 查询订单数量
+        int count = OrderMapper.countOrderall(currentStartDate, currentEndDate);
+
+        // 返回结果
+        return ResponseResult.succ("查询成功", count);
+    }
+    @GetMapping("/getOrderStatusCountsByDate")
+    public List<Map<String, Object>> getOrderStatusCountsByDate(@RequestParam String date) {
+        return OrderMapper.getOrderStatusCountsByDate(date);
+    }
+    @GetMapping("all1")
+    public Result all1() {
+        return ResponseResult.succ("查询成功",OrderMapper.all1());
+    }
+    @GetMapping("all2")
+    public Result all2(int page , int pageSize,@RequestParam String startDate, @RequestParam String endDate) {
+        int start = (page - 1) * pageSize;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // 解析开始和结束日期
+        LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
+        LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
+
+        // 拼接完整的日期时间字符串
+        String currentStartDate = startLocalDate.atStartOfDay().format(formatter) + " 00:00:00";
+        String currentEndDate = endLocalDate.atTime(23, 59, 59).format(formatter) + " 23:59:59";
+
+        List<Map<String, Object>> data = OrderMapper.all2(start, pageSize,currentStartDate,currentEndDate);
+        return ResponseResult.succ("查询成功",data );
     }
 
 

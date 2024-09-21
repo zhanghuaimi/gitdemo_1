@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 public class LbController {
     @Autowired
     LbMapper lbMapper;
-    @Autowired
-    HttpSession session;
     @GetMapping("/getAllLbs")
-    public Result getAllLbs() {
-        return ResponseResult.succ("查询成功",lbMapper.getAllLbs());
+    public List<Lb> getLbsWithPagination(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return lbMapper.getAllLbs(offset, pageSize);
     }
     @PostMapping("/insertLb")
     public Result insertLb(@RequestBody Lb lb) {
@@ -40,5 +40,17 @@ public class LbController {
     public Result updateStatusById( Integer id,int status){
         return ResponseResult.succ("修改成功",lbMapper.updateStatusById(id,status));
 
+    }
+    @GetMapping("/countlb")
+    public Result countlb(){
+        return ResponseResult.succ("查询成功",lbMapper.countlb());
+    }
+    @GetMapping("getLbById")
+    public Result getLbById(int id){
+        return ResponseResult.succ("查询成功",lbMapper.getLbById(id));
+    }
+    @GetMapping("/updateLb")
+    public Result updateLb(int id,String name, int status){
+        return ResponseResult.succ("修改成功",lbMapper.updateLb(id , name, status));
     }
 }
